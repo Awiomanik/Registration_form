@@ -1,0 +1,14 @@
+[tool.poetry]
+name = "Registration_form"
+version = "0.1.0"
+description = "A minimal Flask registration system with live counters."
+authors = ["Wojciech Kosnik-Kowalczuk <wojciech.kosnik.kowalczuk@gmaail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+flask = "^3.1.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

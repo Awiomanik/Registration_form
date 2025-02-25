@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>{{ settings.title }}</title>
+  <style>
+        /* Overall page styling */
+        body {
+        font-family: Arial, sans-serif;
+        background-color: #F5F7FA;  /* very light blue-gray */
+        color: #333;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin: 0;
+        padding: 20px;
+        }
+
+        /* Container styling: slightly tinted backgrounds with rounded corners and a soft shadow */
+        .container {
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        width: 95%;
+        max-width: 400px;
+        margin: 20px 0;
+        padding: 20px;
+        }
+
+        /* Header container: a very light blue tint */
+        .header {
+        background-color: #e0eaf2;  /* very light blue */
+        text-align: center;
+        margin-bottom: 20px;
+        border-bottom: 1px solid #B3E5FC;
+        }
+
+        /* Availability container: a soft pastel green */
+        #availability-container {
+        background-color: #f2fbf2;  /* very light green */
+        }
+
+        /* Registration container: a subtle light peach */
+        #registration-container {
+        background-color: #fcf6ec;  /* very light peach */
+        text-align: center;
+        }
+
+        /* Registrations container: a delicate light lavender */
+        #registrations-container {
+        background-color: #fbf5ff;  /* very light lavender */
+        }
+
+        /* Section title styling */
+        .section-title {
+        margin-top: 0;
+        border-bottom: 1px solid #e0e0e0;
+        padding-bottom: 5px;
+        }
+
+        /* Message styling for success and error */
+        .message {
+        margin-bottom: 15px;
+        padding: 10px;
+        border-radius: 5px;
+        }
+        .message.success {
+        background-color: #E8F5E9;
+        border: 1px solid #C8E6C9;
+        color: #2E7D32;
+        }
+        .message.error {
+        background-color: #FDECEA;
+        border: 1px solid #F5C6CB;
+        color: #B71C1C;
+        }
+
+        /* Table styling */
+        table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+        }
+        table, th, td {
+        border: 1px solid #999;
+        padding: 8px;
+        }
+        th {
+        background-color: #ccc;
+        }
+  </style>
+</head>
+<body>
+  <!-- Header container -->
+  <div class="container header">
+    <h1>{{ settings.title }}</h1>
+  </div>
+
+  <!-- Availability section -->
+  <div class="container" id="availability-container">
+    <h2 class="section-title">Aktualna dostępność</h2>
+    <div class="group-status">
+      {% for group_id, group_data in groups.items() %}
+        <p>
+          {{ group_data.name }}:
+          <span id="count-{{ group_id }}">
+            {{ group_data.slots_string }}
+          </span>
+        </p>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Registration form section with messages -->
+  <div class="container" id="registration-container">
+    <h2 class="section-title">Rejestracja</h2>
+    {% if error_msg %}
+      <div class="message error">{{ error_msg }}</div>
+    {% endif %}
+    {% if success_msg %}
+      <div class="message success">{{ success_msg }}</div>
+    {% endif %}
+    <form method="POST" action="/">
+      <label for="name">Imię i nazwisko:</label><br>
+      <input type="text" id="name" name="name" required><br><br>
+
+      <label for="email">Email:</label><br>
+      <input type="email" id="email" name="email" required><br><br>
+
+      <label for="group">Wybór grupy:</label><br>
+      <select id="group" name="group">
+        {% for group_id, group_data in groups.items() %}
+          <option value="{{ group_id }}">{{ group_data.name }}</option>
+        {% endfor %}
+      </select><br><br>
+
+      <button type="submit">Zarejestruj</button>
+    </form>
+  </div>
+
+  <!-- Registrations table section -->
+  {% if settings.show_registrations_table %}
+    <div class="container" id="registrations-container">
+      <h2 class="section-title">Aktualnie zarejestrowani</h2>
+      {% for group_id, data in groups.items() %}
+        <h3>{{ data.name }}</h3>
+        <div id="table-{{ group_id }}">
+          <!-- Placeholder for no-JS scenario -->
+          {% if data.registered %}
+            <noscript>
+              <p>(Zarejestrowano {{ data.registered|length }} osób – włącz JavaScript, aby odświeżać na żywo)</p>
+            </noscript>
+          {% else %}
+            <noscript>(Brak zarejestrowanych osób – włącz JavaScript, aby odświeżać na żywo)</noscript>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <script>
+    // Single refresh rate from settings (in milliseconds)
+    const refreshRate = {{ settings.refresh_rate_ms }};
+
+    function fetchAllData() {
+      fetch('/get_data')
+        .then(response => response.json())
+        .then(data => {
+          // 1. Update capacity data
+          const capacityInfo = data.capacity_data;
+          for (let groupId in capacityInfo) {
+            const spanEl = document.getElementById("count-" + groupId);
+            if (!spanEl) continue;
+            const capacity = capacityInfo[groupId].capacity;
+            const total = capacityInfo[groupId].total;
+            spanEl.textContent = (capacity > 0)
+              ? `${capacity}/${total} wolnych miejsc`
+              : "Brak wolnych miejsc";
+          }
+          // 2. Update registration tables
+          const registrationInfo = data.registration_data;
+          for (let groupId in registrationInfo) {
+            const groupDetails = registrationInfo[groupId];
+            const tableWrapper = document.getElementById("table-" + groupId);
+            if (!tableWrapper) continue;
+            tableWrapper.innerHTML = "";
+            const registrants = groupDetails.registrants;
+            if (registrants.length > 0) {
+              let newTable = document.createElement("table");
+              let headerRow = document.createElement("tr");
+              headerRow.innerHTML = "<th>Imię i nazwisko</th><th>E-mail</th>";
+              newTable.appendChild(headerRow);
+              registrants.forEach(r => {
+                let row = document.createElement("tr");
+                row.innerHTML = `<td>${r.name}</td><td>${r.email}</td>`;
+                newTable.appendChild(row);
+              });
+              tableWrapper.appendChild(newTable);
+            } else {
+              tableWrapper.textContent = "(Brak zarejestrowanych osób w tej grupie.)";
+            }
+          }
+        })
+        .catch(err => {
+          console.error("Error fetching data:", err);
+        });
+    }
+    
+    // Poll the combined endpoint at the refresh rate
+    setInterval(fetchAllData, refreshRate);
+  </script>
+</body>
+</html>

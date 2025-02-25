@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.pyc
+
+# Virtual Environments
+.env/
+venv/
+
+# Flask Instance Folder (for sensitive configs)
+instance/
+
+# Environment Variables
+.env
+
+# Logs
+*.log
+
+# OS Files
+.DS_Store
+
+# Poetry
+poetry.lock

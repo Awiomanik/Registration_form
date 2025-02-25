@@ -1,0 +1,22 @@
+{
+  "settings": {
+    "title": "Rejestracja do grup 3 i 4",
+    "background_color": "#F9F9F9",
+    "show_registrations_table": true,
+    "refresh_rate_ms": 1200
+  },
+  "groups": [
+    {
+      "id": "1",
+      "name": "Grupa 3",
+      "slots": 14,
+      "description": "Opis grupy 3..."
+    },
+    {
+      "id": "2",
+      "name": "Grupa 4",
+      "slots": 14,
+      "description": "Opis grupy 4..."
+    }
+  ]
+}

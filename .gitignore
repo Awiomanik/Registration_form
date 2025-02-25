@@ -20,3 +20,6 @@ instance/
 
 # Poetry
 poetry.lock
+
+# Outputs
+OUTPUTS/

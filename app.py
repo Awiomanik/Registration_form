@@ -55,7 +55,7 @@ refresh_rate_ms = settings.get("refresh_rate_ms", 2000)  # default 5s
 server_timeout_seconds = refresh_rate_ms / 1000.0        # convert ms -> s
 
 # UTILITY FUNCTIONS
-def save_registrations(filename="registrations.txt"):
+def save_registrations(filename = os.path.join("OUTPUTS", "registrations.txt")):
     """
     Write the current group data and who registered to a file.
     """

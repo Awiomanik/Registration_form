@@ -1,4 +1,0 @@
-ngrok http 5000 
-
-poetry shell
-python app.py

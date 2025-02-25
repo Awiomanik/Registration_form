@@ -1,4 +1,12 @@
-Below is a straightforward way to adapt your **Poetry + Flask** workflow for this new registration app. We’ll create a minimal **`pyproject.toml`** that specifies Flask as a dependency, let Poetry generate (and manage) the **`poetry.lock`** file, and provide a small “Commands” file (or instructions) on how to run the app locally (and optionally via **ngrok**).
+ngrok http 5000 
+
+poetry shell
+python app.py
+
+
+
+
+
 
 ---
 
@@ -66,24 +74,9 @@ Then open the ngrok URL in your browser to share publicly.
 
 ---
 
-## 3. Place Your `app.py` and Template Files
 
-Your final folder might look like this:
 
-```
-my_registration/
-├── app.py
-├── pyproject.toml
-├── README.md
-├── templates/
-│   └── index.html
-└── (optionally) static/
-    └── style.css
-```
 
-**`app.py`** contains your Flask code. The **`templates/index.html`** and **`static/style.css`** (if used) hold the front-end HTML/CSS/JS.
-
----
 
 ## 4. Run Poetry & Generate the Lock File
 
@@ -147,31 +140,6 @@ This is purely informational—Poetry and the app do not require this file to fu
 
 ---
 
-## 7. Final Structure Example
-
-```
-my_registration/
-├── app.py
-├── pyproject.toml
-├── poetry.lock         (auto-generated when you run 'poetry install')
-├── README.md           (optional)
-├── Commands            (optional, just your personal cheat sheet)
-├── templates/
-│   └── index.html
-└── static/
-    └── style.css
-```
-
-- **`pyproject.toml`**: Tells Poetry what your app is named, what dependencies you have, etc.
-- **`poetry.lock`**: Created by Poetry automatically; pins the exact versions of your dependencies.
-- **`app.py`**: Your Flask code (the registration logic).
-- **`templates/index.html`**: Your HTML (including the AJAX polling script).
-- **`static/style.css`**: Any custom CSS you may want.
-
----
-
-## That’s It!
-
 With this setup:
 
 1. Run `poetry install` once to set up your dependencies.  
@@ -179,4 +147,3 @@ With this setup:
 3. `python app.py` to run it.  
 4. Optionally `ngrok http 5000` to share publicly.
 
-This approach should replicate the functionality of your old “laurel project,” but specifically tailored to your new registration system.
